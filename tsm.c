@@ -19,6 +19,8 @@ const int program[] = {
 	PSH, 7, PSH, 3, AND, POP,
 	PSH, 14, PSH, 3, OR, POP,
 	PSH, 14, PSH, 3, XOR, POP,
+	PSH, 2, PSH, -1, XOR, POP,	/* complement (NOT operator) */
+	PSH, 5, PSH, -1, XOR, PSH, 6, ADD, POP,
 	
 	/* test shifts */
 	PSH, 10, PSH, 1, SHL, POP,
@@ -35,6 +37,9 @@ const int program[] = {
 	/* print the message three times, branching to the previous test */
 	LDW, 10, PSH, 1, ADD, STW, 10,
 	LDW, 10, PSH, 3, BLT, -43,
+	
+	/* test load byte sign extension */
+	PSH, -100, STW, 11, LDB, 11 * sizeof(int), POP,
 	
 	/* stop the virtual machine */
 	HLT,
@@ -53,9 +58,7 @@ int execute(struct vm_s *vm, int instr)
 	
 	switch (instr) {
 	case PSH:
-		vm->sp--;
-		vm->pc++;
-		vm->stack[vm->sp] = program[vm->pc];
+		vm->stack[--vm->sp] = program[++vm->pc];
 		break;
 	case POP:
 		val = vm->stack[vm->sp++];
@@ -68,58 +71,42 @@ int execute(struct vm_s *vm, int instr)
 	case AND:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a & b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a & b;
 		break;
 	case OR:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a | b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a | b;
 		break;
 	case XOR:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a ^ b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a ^ b;
 		break;
 	case ADD:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a + b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a + b;
 		break;
 	case SUB:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a - b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a - b;
 		break;
 	case SHL:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a << b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a << b;
 		break;
 	case SHR:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = (unsigned int)a >> b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = (unsigned int)a >> b;
 		break;
 	case ASR:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
-		val = a >> b;
-		vm->sp--;
-		vm->stack[vm->sp] = val;
+		vm->stack[--vm->sp] = a >> b;
 		break;
 	case BEQ:
 		b = vm->stack[vm->sp++];
@@ -146,24 +133,16 @@ int execute(struct vm_s *vm, int instr)
 		a >= b ? vm->pc += program[vm->pc] : 0;
 		break;
 	case LDW:
-		vm->sp--;
-		vm->pc++;
-		vm->stack[vm->sp] = vm->stack[program[vm->pc]];
+		vm->stack[--vm->sp] = vm->stack[program[++vm->pc]];
 		break;
 	case STW:
-		a = vm->stack[vm->sp++];
-		vm->pc++;
-		vm->stack[program[vm->pc]] = a;
+		vm->stack[program[++vm->pc]] = vm->stack[vm->sp++];
 		break;
 	case LDB:
-		vm->sp--;
-		vm->pc++;
-		vm->stack[vm->sp] = vm->data[program[vm->pc]];
+		vm->stack[--vm->sp] = vm->data[program[++vm->pc]];
 		break;
 	case STB:
-		a = vm->stack[vm->sp++];
-		vm->pc++;
-		vm->data[program[vm->pc]] = a & 0xff;
+		vm->data[program[++vm->pc]] = vm->stack[vm->sp++] & 0xff;
 		break;
 	case HLT:
 		printf("done\n");
