@@ -21,7 +21,7 @@ const int program[] = {
 	PSH, 14, PSH, 3, XOR, POP,
 	PSH, 2, PSH, -1, XOR, POP,	/* complement (NOT operator) */
 	PSH, 5, PSH, -1, XOR, PSH, 6, ADD, POP,
-	
+
 	/* test shifts */
 	PSH, 10, PSH, 1, SHL, POP,
 	PSH, 10, PSH, 1, SHR, POP,
@@ -31,12 +31,13 @@ const int program[] = {
 	/* test loads and stores, print a message stored in memory */
 	LDW, 5, LDW, 6, ADD, POP,
 	LDW, 5, LDW, 6, ADD, STW, 7, LDW, 7, POP,
+
 	LDB, 10, LDB, 9, LDB, 8, LDB, 7, LDB, 6, LDB, 5, LDB, 4, LDB, 3, LDB, 2, LDB, 1, LDB, 0,
 	POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB,
 	
 	/* print the message three times, branching to the previous test */
 	LDW, 10, PSH, 1, ADD, STW, 10,
-	LDW, 10, PSH, 3, BLT, -43,
+	LDW, 10, PSH, 3, BLT, 109,
 	
 	/* test load byte sign extension */
 	PSH, -100, STW, 11, LDB, 11 * sizeof(int), POP,
@@ -57,6 +58,9 @@ int execute(struct vm_s *vm, int instr)
 	int a, b, val;
 	
 	switch (instr) {
+	case HLT:
+		printf("done\n");
+		return 0;
 	case PSH:
 		vm->stack[--vm->sp] = program[++vm->pc];
 		break;
@@ -112,25 +116,25 @@ int execute(struct vm_s *vm, int instr)
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a == b ? vm->pc += program[vm->pc] : 0;
+		a == b ? vm->pc = program[vm->pc] : 0;
 		break;
 	case BNE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a != b ? vm->pc += program[vm->pc] : 0;
+		a != b ? vm->pc = program[vm->pc] : 0;
 		break;
 	case BLT:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a < b ? vm->pc += program[vm->pc] : 0;
+		a < b ? vm->pc = program[vm->pc] : 0;
 		break;
 	case BGE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a >= b ? vm->pc += program[vm->pc] : 0;
+		a >= b ? vm->pc = program[vm->pc] : 0;
 		break;
 	case LDW:
 		vm->stack[--vm->sp] = vm->stack[program[++vm->pc]];
@@ -144,9 +148,6 @@ int execute(struct vm_s *vm, int instr)
 	case STB:
 		vm->data[program[++vm->pc]] = vm->stack[vm->sp++] & 0xff;
 		break;
-	case HLT:
-		printf("done\n");
-		return 0;
 	default:
 		printf("opcode not implemented\n");
 		return 0;
