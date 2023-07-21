@@ -1,12 +1,12 @@
-#define DATA_MEM_SIZE	4096
+#define MEM_SIZE	4096
 
 /* machine instruction set */
 enum {
 	HLT,						/* control */
-	PSH, POP, POPB,					/* stack push / pop */
+	PSH, POP, POPB, DUP,				/* stack push / pop */
 	AND, OR, XOR, ADD, SUB,				/* logical and arithmetic */
 	SHL, SHR, ASR,					/* shift */
-	BEQ, BNE, BLT, BGE,				/* branch */
+	BEQ, BNE, BLT, BGE, BRA,			/* branch */
 	LDW, STW, LDB, STB				/* load / store */
 };
 
@@ -16,4 +16,5 @@ struct vm_s {
 	int sp;
 	int *stack;
 	char *data;
+	int *code;
 };

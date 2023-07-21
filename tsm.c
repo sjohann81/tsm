@@ -4,54 +4,12 @@
 #include "tsm.h"
 
 
-/* program memory */
-const int program[] = {
-	/* push 5 and 6 to stack, add both values (result in the stack), pop the result */
-	PSH, 5, PSH, 6, ADD, POP,		
-	PSH, 5, PSH, 6, SUB, POP,
-	PSH, 123, PSH, 456, SUB, POP,
-	
-	/* push 'hello' in reverse order to stack then pop each byte */
-	PSH, 'o', PSH, 'l', PSH, 'l', PSH, 'e', PSH, 'h', POPB, POPB, POPB, POPB, POPB, 
-	PSH, 10, POP,
-	
-	/* test logical operations */
-	PSH, 7, PSH, 3, AND, POP,
-	PSH, 14, PSH, 3, OR, POP,
-	PSH, 14, PSH, 3, XOR, POP,
-	PSH, 2, PSH, -1, XOR, POP,	/* complement (NOT operator) */
-	PSH, 5, PSH, -1, XOR, PSH, 6, ADD, POP,
-
-	/* test shifts */
-	PSH, 10, PSH, 1, SHL, POP,
-	PSH, 10, PSH, 1, SHR, POP,
-	PSH, -10, PSH, 3, SHR, POP,
-	PSH, -10, PSH, 3, ASR, POP,
-	
-	/* test loads and stores, print a message stored in memory */
-	LDW, 5, LDW, 6, ADD, POP,
-	LDW, 5, LDW, 6, ADD, STW, 7, LDW, 7, POP,
-
-	LDB, 10, LDB, 9, LDB, 8, LDB, 7, LDB, 6, LDB, 5, LDB, 4, LDB, 3, LDB, 2, LDB, 1, LDB, 0,
-	POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB, POPB,
-	
-	/* print the message three times, branching to the previous test */
-	LDW, 10, PSH, 1, ADD, STW, 10,
-	LDW, 10, PSH, 3, BLT, 109,
-	
-	/* test load byte sign extension */
-	PSH, -100, STW, 11, LDB, 11 * sizeof(int), POP,
-	
-	/* stop the virtual machine */
-	HLT,
-	
-	PSH, 0, PSH, 1, BNE, -18,
-	
-	HLT
-};
-
-
-/* VM implementation */
+/* VM implementation 
+ * 
+ * Machine state is kept in a struct vm_s data structure (program counter,
+ * stack pointer and pointers to memory. An instruction is decoded and
+ * executed. In this implementation, POP and POPB instructions have popped
+ * values (int and char) printed in the terminal. */
 
 int execute(struct vm_s *vm, int instr)
 {
@@ -59,10 +17,10 @@ int execute(struct vm_s *vm, int instr)
 	
 	switch (instr) {
 	case HLT:
-		printf("done\n");
+		printf("\nProgram stop (pc: %08x, sp: %08x)\n", vm->pc << 2, vm->sp << 2);
 		return 0;
 	case PSH:
-		vm->stack[--vm->sp] = program[++vm->pc];
+		vm->stack[--vm->sp] = vm->code[++vm->pc];
 		break;
 	case POP:
 		val = vm->stack[vm->sp++];
@@ -71,6 +29,10 @@ int execute(struct vm_s *vm, int instr)
 	case POPB:
 		val = vm->stack[vm->sp++];
 		printf("%c", val);
+		break;
+	case DUP:
+		vm->stack[vm->sp - 1] = vm->stack[vm->sp];
+		vm->sp--;
 		break;
 	case AND:
 		b = vm->stack[vm->sp++];
@@ -116,71 +78,86 @@ int execute(struct vm_s *vm, int instr)
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a == b ? vm->pc = program[vm->pc] : 0;
-		break;
+		a == b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		return 1;
 	case BNE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a != b ? vm->pc = program[vm->pc] : 0;
-		break;
+		a != b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		return 1;
 	case BLT:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a < b ? vm->pc = program[vm->pc] : 0;
-		break;
+		a < b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		return 1;
 	case BGE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a >= b ? vm->pc = program[vm->pc] : 0;
-		break;
+		a >= b ? vm->pc = vm->code[vm->pc] >> 2: vm->pc++;
+		return 1;
+	case BRA:
+		vm->pc++;
+		vm->pc = vm->code[vm->pc] >> 2;
+		return 1;
 	case LDW:
-		vm->stack[--vm->sp] = vm->stack[program[++vm->pc]];
+		vm->stack[vm->sp] = vm->stack[vm->code[vm->sp] >> 2];
 		break;
 	case STW:
-		vm->stack[program[++vm->pc]] = vm->stack[vm->sp++];
+		a = vm->stack[vm->sp++] >> 2;
+		vm->stack[a] = vm->stack[vm->sp++];
 		break;
 	case LDB:
-		vm->stack[--vm->sp] = vm->data[program[++vm->pc]];
+		vm->stack[vm->sp] = vm->data[vm->code[vm->sp]];
 		break;
 	case STB:
-		vm->data[program[++vm->pc]] = vm->stack[vm->sp++] & 0xff;
+		a = vm->stack[vm->sp++];
+		vm->data[a] = vm->stack[vm->sp++] & 0xff;
 		break;
 	default:
-		printf("opcode not implemented\n");
+		printf("\nHalt (opcode: %08x, pc: %08x, sp: %08x) - opcode not implemented\n", instr, vm->pc << 2, vm->sp << 2);
 		return 0;
 	}
 	
+	vm->pc++;
+	
 	return 1;
 }
+
 
 int main()
 {
 	struct vm_s context;
 	struct vm_s *vm = &context;
+	int val = 0, data, pos, cycles = 0;
 	
-	vm->data = malloc(DATA_MEM_SIZE);
 	vm->pc = 0;
-	vm->sp = DATA_MEM_SIZE / sizeof(int);
-	vm->stack = (int *)vm->data;
+	vm->sp = MEM_SIZE / sizeof(int);
+	vm->code = malloc(MEM_SIZE);
+	vm->data = (char *)vm->code;
+	vm->stack = vm->code;
 	
-	if (!vm->data)
+	if (!vm->code)
 		return -1;
 	
 	/* initialize data segment with bogus values for the tests */
-	memset(vm->data, 0, DATA_MEM_SIZE);
-	vm->stack[5] = 44;
-	vm->stack[6] = 55;
-	vm->stack[10] = 0;
-	strcpy(vm->data, "hey there\n");
+	memset(vm->data, 0, MEM_SIZE);
+	for (pos = 0; val != EOF; pos++) {
+		val = fscanf(stdin, "%d\n", &data);
+		vm->code[pos] = data;
+	}
+	
+	printf("Running...\n");
 	
 	/* run! */
-	while (execute(vm, program[vm->pc]))
-		vm->pc++;
+	while (execute(vm, vm->code[vm->pc]))
+		cycles++;
 
-	free(vm->data);
+	free(vm->code);
+	
+	printf("Cycles: %d\n", cycles);
 
 	return 0;
 }
