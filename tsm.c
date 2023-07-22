@@ -14,6 +14,7 @@
 int execute(struct vm_s *vm, int instr)
 {
 	int a, b, val;
+	char buf[20];
 	
 	switch (instr) {
 	case HLT:
@@ -23,15 +24,19 @@ int execute(struct vm_s *vm, int instr)
 		vm->stack[--vm->sp] = vm->code[++vm->pc];
 		break;
 	case POP:
-		val = vm->stack[vm->sp++];
-		printf("%d\n", val);
-		break;
-	case POPB:
-		val = vm->stack[vm->sp++];
-		printf("%c", val);
+		vm->sp++;
 		break;
 	case DUP:
 		vm->stack[vm->sp - 1] = vm->stack[vm->sp];
+		vm->sp--;
+		break;
+	case SWAP:
+		val = vm->stack[vm->sp - 1];
+		vm->stack[vm->sp - 1] = vm->stack[vm->sp];
+		vm->stack[vm->sp] = val;
+		break;
+	case OVER:
+		vm->stack[vm->sp - 1] = vm->stack[vm->sp + 1];
 		vm->sp--;
 		break;
 	case AND:
@@ -115,6 +120,21 @@ int execute(struct vm_s *vm, int instr)
 	case STB:
 		a = vm->stack[vm->sp++];
 		vm->data[a] = vm->stack[vm->sp++] & 0xff;
+		break;
+	case IN:
+		fgets(buf, sizeof(buf) - 2, stdin);
+		vm->stack[--vm->sp] = atoi(buf);
+		break;
+	case INB:
+		vm->stack[--vm->sp] = getchar();
+		break;
+	case OUT:
+		val = vm->stack[vm->sp++];
+		printf("%d\n", val);
+		break;
+	case OUTB:
+		val = vm->stack[vm->sp++];
+		printf("%c", val);
 		break;
 	default:
 		printf("\nHalt (opcode: %08x, pc: %08x, sp: %08x) - opcode not implemented\n", instr, vm->pc << 2, vm->sp << 2);
