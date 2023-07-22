@@ -5,11 +5,11 @@ main:
 	LDW
 	BLT less_than
 	PSH 0
-	POP
+	OUT
 	BRA end
 less_than:
 	PSH 'a'
-	POPB
+	OUTB
 	
 	PSH val2		; test if val2 >= val1
 	LDW
@@ -17,11 +17,11 @@ less_than:
 	LDW
 	BGE gre_equal1
 	PSH 0
-	POP
+	OUT
 	BRA end
 gre_equal1:
 	PSH 'b'
-	POPB
+	OUTB
 	
 	PSH val1		; test if val2 >= val1
 	LDW
@@ -29,11 +29,11 @@ gre_equal1:
 	LDW
 	BGE gre_equal2
 	PSH 0
-	POP
+	OUT
 	BRA end
 gre_equal2:
 	PSH 'c'
-	POPB
+	OUTB
 	
 	PSH val1		; test if val1 != val2
 	LDW
@@ -41,11 +41,11 @@ gre_equal2:
 	LDW
 	BNE not_equal
 	PSH 0
-	POP
+	OUT
 	BRA end
 not_equal:
 	PSH 'd'
-	POPB
+	OUTB
 	
 	PSH val2		; test if val1 == val2
 	LDW
@@ -53,11 +53,11 @@ not_equal:
 	LDW
 	BEQ equal
 	PSH 0
-	POP
+	OUT
 	BRA end
 equal:
 	PSH 'e'
-	POPB
+	OUTB
 	
 	PSH val1		; test if val1 < -23456 || val2 == 555
 	LDW
@@ -68,12 +68,11 @@ equal:
 	PSH 555
 	BEQ less_than_or
 	PSH 0
-	POP
+	OUT
 	BRA end
 less_than_or:
 	PSH 'f'
-	POPB
-	
+	OUTB
 end:
 	HLT
 

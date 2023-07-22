@@ -8,7 +8,7 @@ main:
 	BRA print		; call print
 ret1:
 	PSH 10
-	POPB			; print a line break
+	OUTB			; print a line break
 
 	PSH mess2
 	PSH ptr
@@ -25,7 +25,7 @@ print:
 	LDW			; load pointer
 	LDB			; derreference string byte
 	DUP
-	POPB			; print it
+	OUTB			; print it
 	
 	PSH 0
 	BEQ			; if byte is a null, return (patched address)

@@ -3,7 +3,7 @@ loop:
 	LDW		; load pointer value
 	LDB		; derreference pointer, access byte in 'text'
 	DUP		; duplicate value
-	POPB		; pop and print byte
+	OUTB		; pop and print byte
 	
 	PSH 0		; push 0 (null)
 	BEQ end		; if last byte is a null, branch to end

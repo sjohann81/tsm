@@ -2,6 +2,7 @@ main:
 	PSH 40			; first 40 fibonacci numbers
 	BRA fib			; call fib()
 ret_fib:
+	POP
 	HLT			; stop program
 
 fib:
@@ -22,7 +23,7 @@ loop:
 
 	PSH a			; print fibonacci number
 	LDW
-	POP
+	OUT
 
 	PSH a
 	LDW			; load a
