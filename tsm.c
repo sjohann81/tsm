@@ -31,8 +31,8 @@ int execute(struct vm_s *vm, int instr)
 		vm->sp--;
 		break;
 	case SWAP:
-		val = vm->stack[vm->sp - 1];
-		vm->stack[vm->sp - 1] = vm->stack[vm->sp];
+		val = vm->stack[vm->sp + 1];
+		vm->stack[vm->sp + 1] = vm->stack[vm->sp];
 		vm->stack[vm->sp] = val;
 		break;
 	case OVER:
