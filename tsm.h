@@ -6,7 +6,7 @@ enum {
 	PSH, POP, DUP, SWAP, OVER,			/* stack */
 	AND, OR, XOR, ADD, SUB,				/* logical and arithmetic */
 	SHL, SHR, ASR,					/* shift */
-	BEQ, BNE, BLT, BGE, BRA,			/* branch */
+	BEQ, BNE, BLT, BGE, BRA, JMP,			/* branch / jump */
 	LDW, STW, LDB, STB,				/* load/store */
 	IN, INB, OUT, OUTB				/* input/output */
 };

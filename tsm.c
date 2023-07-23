@@ -107,6 +107,9 @@ int execute(struct vm_s *vm, int instr)
 		vm->pc++;
 		vm->pc = vm->code[vm->pc] >> 2;
 		return 1;
+	case JMP:
+		vm->pc = vm->stack[vm->sp++] >> 2;
+		return 1;
 	case LDW:
 		vm->stack[vm->sp] = vm->stack[vm->code[vm->sp] >> 2];
 		break;

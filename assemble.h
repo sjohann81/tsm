@@ -4,7 +4,7 @@ enum {
 	PSH, POP, DUP, SWAP, OVER,			/* stack */
 	AND, OR, XOR, ADD, SUB,				/* logical and arithmetic */
 	SHL, SHR, ASR,					/* shift */
-	BEQ, BNE, BLT, BGE, BRA,			/* branch */
+	BEQ, BNE, BLT, BGE, BRA, JMP,			/* branch */
 	LDW, STW, LDB, STB,				/* load/store */
 	IN, INB, OUT, OUTB				/* input/output */
 };
@@ -21,7 +21,7 @@ struct inst_s opcodes[] = {
 	{"PSH", PSH}, {"POP", POP}, {"DUP", DUP}, {"SWAP", SWAP}, {"OVER", OVER},
 	{"AND", AND}, {"OR", OR}, {"XOR", XOR}, {"ADD", ADD}, {"SUB", SUB},
 	{"SHL", SHL}, {"SHR", SHR}, {"ASR", ASR},
-	{"BEQ", BEQ}, {"BNE", BNE}, {"BLT", BLT}, {"BGE", BGE}, {"BRA", BRA},
+	{"BEQ", BEQ}, {"BNE", BNE}, {"BLT", BLT}, {"BGE", BGE}, {"BRA", BRA}, {"JMP", JMP},
 	{"LDW", LDW}, {"STW", STW}, {"LDB", LDB}, {"STB", STB},
 	{"IN", IN}, {"INB", INB}, {"OUT", OUT}, {"OUTB", OUTB}
 };
