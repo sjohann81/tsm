@@ -19,7 +19,8 @@ struct inst_s {
 /* Instruction opcode table */
 struct inst_s opcodes[] = {
 	{"HLT", HLT},
-	{"PSH", PSH}, {"POP", POP}, {"DUP", DUP}, {"SWAP", SWAP}, {"OVER", OVER},
+	{"PSH", PSH}, {"POP", POP}, {"PSHSP", PSHSP}, {"POPSP", POPSP},
+	{"DUP", DUP}, {"SWAP", SWAP}, {"OVER", OVER},
 	{"AND", AND}, {"OR", OR}, {"XOR", XOR}, {"ADD", ADD}, {"SUB", SUB},
 	{"SHL", SHL}, {"SHR", SHR}, {"ASR", ASR},
 	{"BEQ", BEQ}, {"BNE", BNE}, {"BLT", BLT}, {"BGE", BGE}, {"BRA", BRA}, {"JMP", JMP},

@@ -28,10 +28,10 @@ int execute(struct vm_s *vm, int instr)
 		break;
 	case PSHSP:
 		vm->sp--;
-		vm->stack[vm->sp] = vm->sp;
+		vm->stack[vm->sp] = vm->sp << 2;
 		break;
 	case POPSP:
-		vm->sp = vm->stack[vm->sp];
+		vm->sp = vm->stack[vm->sp] >> 2;
 		vm->sp++;
 		break;
 	case DUP:
