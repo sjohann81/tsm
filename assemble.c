@@ -142,10 +142,8 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 						while (*word != '"') {
 							val = 0;
 							for (i = 0; i < sizeof(int); i++) {
-//								val <<= 8;
 								val >>= 8;
 								if (*word != '"') {
-//									val |= *word & 0xff;
 									val |= (*word & 0xff) << ((sizeof(int) - 1) * 8);
 									word++;
 								}

@@ -26,6 +26,14 @@ int execute(struct vm_s *vm, int instr)
 	case POP:
 		vm->sp++;
 		break;
+	case PSHSP:
+		vm->sp--;
+		vm->stack[vm->sp] = vm->sp;
+		break;
+	case POPSP:
+		vm->sp = vm->stack[vm->sp];
+		vm->sp++;
+		break;
 	case DUP:
 		vm->stack[vm->sp - 1] = vm->stack[vm->sp];
 		vm->sp--;

@@ -5,7 +5,7 @@
 This is a quick implementation of a stack based cpu virtual machine and a simple toolchain, composed by an assembler. In this virtual machine one memory region (address space) is shared between the program, data and the stack. Implemented opcodes in this machine are divided in 6 classes:
 
 - Control: HLT (halt execution)
-- Stack: PSH (push value to stack), POP (pop value from stack), DUP (duplicate value on stack), SWAP (swap two top values on stack), OVER (push second top value to top of stack)
+- Stack: PSH (push value), POP (pop value), PSHSP (push stack pointer), POPSP (pop and set stack pointer), DUP (duplicate value), SWAP (swap top two values), OVER (push second top value)
 - Logical and arithmetic: AND (logical and), OR (logical or), XOR (logical exclusive or), ADD (arithmetic add), SUB (arithmetic subtract)
 - Shift: SHL (logical shift left), SHR (logical shift right), ASR (arithmetic shift right)
 - Branch: BEQ (branch if equal), BNE (branch if not equal), BLT (branch if less than), BGE (branch if greater or equal), BRA (branch always), JMP (jump unconditionally)

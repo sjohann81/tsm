@@ -3,7 +3,8 @@
 /* machine instruction set */
 enum {
 	HLT,						/* control */
-	PSH, POP, DUP, SWAP, OVER,			/* stack */
+	PSH, POP, PSHSP, POPSP, 			/* stack */
+	DUP, SWAP, OVER,				/* stack */
 	AND, OR, XOR, ADD, SUB,				/* logical and arithmetic */
 	SHL, SHR, ASR,					/* shift */
 	BEQ, BNE, BLT, BGE, BRA, JMP,			/* branch / jump */
