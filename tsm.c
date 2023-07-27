@@ -18,7 +18,7 @@ int execute(struct vm_s *vm, int instr)
 	
 	switch (instr) {
 	case HLT:
-		printf("\nProgram stop (pc: %08x, sp: %08x)\n", vm->pc << 2, vm->sp << 2);
+		printf("\nProgram stop (pc: %08x, fp: %08x, sp: %08x)\n", vm->pc << 2, vm->fp << 2, vm->sp << 2);
 		return 0;
 	case PSH:
 		vm->stack[--vm->sp] = vm->code[++vm->pc];
@@ -156,7 +156,7 @@ int execute(struct vm_s *vm, int instr)
 		printf("%c", val);
 		break;
 	default:
-		printf("\nHalt (opcode: %08x, pc: %08x, sp: %08x) - opcode not implemented\n", instr, vm->pc << 2, vm->sp << 2);
+		printf("\nHalt (opcode: %08x, pc: %08x, fp: %08x, sp: %08x) - opcode not implemented\n", instr, vm->pc << 2, vm->fp << 2, vm->sp << 2);
 		return 0;
 	}
 	
@@ -173,6 +173,7 @@ int main()
 	int val = 0, data, pos, cycles = 0;
 	
 	vm->pc = 0;
+	vm->fp = 0;
 	vm->sp = MEM_SIZE / sizeof(int);
 	vm->code = malloc(MEM_SIZE);
 	vm->data = (char *)vm->code;
