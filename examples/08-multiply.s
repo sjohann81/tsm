@@ -2,16 +2,16 @@ main:
 	PSH 0			; push 3rd argument (return val)
 	PSH 123			; push 2nd argument (b)
 	PSH -456		; push 1st argument (a)
-	PSHFP
+	PSHFP			; push frame pointer
 	PSHSP			; push stack pointer
 	PSH ret1		; push return address
 	BRA mult		; call multiply routine
 ret1:
-	POPSP
-	POPFP
-	POP
-	POP
-	OUT			; print return val (result)
+	POPSP			; pop stack pointer
+	POPFP			; pop frame pointer
+	POP			; pop 1st argument
+	POP			; pop 2nd argument
+	OUT			; pop result, print return val
 	HLT
 
 
