@@ -5,10 +5,10 @@
 This is a quick implementation of a stack based cpu virtual machine and a simple toolchain, composed by an assembler. In this virtual machine one memory region (address space) is shared between the program, data and the stack. Implemented opcodes in this machine are divided in 6 classes:
 
 - Control: HLT (halt execution)
-- Stack: PSH (push value), POP (pop value), PSHSP (push stack pointer), POPSP (pop and set stack pointer), DUP (duplicate value), SWAP (swap top two values), OVER (push second top value)
+- Stack: PSH (push value), POP (pop value), PSHSP (push stack pointer), POPSP (pop and set stack pointer), PSHFP (push frame pointer), POPFP (pop and set frame pointer), DUP (duplicate value), SWAP (swap top two values), OVER (push second top value)
 - Logical and arithmetic: AND (logical and), OR (logical or), XOR (logical exclusive or), ADD (arithmetic add), SUB (arithmetic subtract)
 - Shift: SHL (logical shift left), SHR (logical shift right), ASR (arithmetic shift right)
-- Branch: BEQ (branch if equal), BNE (branch if not equal), BLT (branch if less than), BGE (branch if greater or equal), BRA (branch always), JMP (jump unconditionally)
+- Branch and jump: BEQ (branch if equal), BNE (branch if not equal), BLT (branch if less than), BGE (branch if greater or equal), BRA (branch always), JMP (jump unconditionally)
 - Load and store: LDW (load word), STW (store word), LDB (load byte), STB (store byte)
 - Input and output: IN (read stdin integer and push to stack), INB (read stdin char and push to stack), OUT (pop integer from stack and write to stdout), OUTB (pop char from stack and write to stdout)
 
@@ -37,16 +37,16 @@ Pass 1 ok.
 0008	LDW
 000c	LDB
 0010	DUP
-0014	POPB
+0014	OUTB
 0018	PSH 0
-0020	BEQ 84
+0020	BEQ 48
 0028	PSH 88
 0030	LDW
 0034	PSH 1
 003c	ADD
 0040	PSH 88
 0048	STW
-004c	BRA 0
+004c	BRA -80
 0054	HLT
 0058	92
 005c	"hello world!"
