@@ -104,7 +104,7 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 {
 	char *line, *line_store, *word, *word_store;
 	int pc = org;
-	int val, wc, lc = 0, i;
+	int val, opcode = -1, wc, lc = 0, i;
 	struct symbol_s *sptr;
 	
 	line = strtok_r(code, "\n", &line_store);
@@ -119,7 +119,7 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 		
 		while (word) {
 			val = opcode_find(opcodes, op_size, word);
-			
+
 			if (is_number(word)) {
 				if (wc == 0)
 					fprintf(stderr, "%04x\t%d", pc, to_number(word));
@@ -129,6 +129,7 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 				pc += 4;
 			} else {
 				if (val >= 0) {
+					opcode = val;
 					fprintf(stderr, "%04x\t%s", pc, word);
 					printf("%d\n", val);
 					pc += 4;
@@ -180,9 +181,14 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 							
 							return -1;
 						}
-						
-						fprintf(stderr, " %d", sptr->addr);
-						printf("%d\n", sptr->addr);
+
+						if (opcode == BEQ || opcode == BNE || opcode == BLT || opcode == BGE || opcode == BRA) {
+							fprintf(stderr, " %d", sptr->addr - pc);
+							printf("%d\n", sptr->addr - pc);						
+						} else {
+							fprintf(stderr, " %d", sptr->addr);
+							printf("%d\n", sptr->addr);
+						}
 						pc += 4;
 					}
 				}

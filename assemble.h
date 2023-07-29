@@ -6,7 +6,7 @@ enum {
 	PSHSP, POPSP, PSHFP, POPFP,			/* stack */
 	AND, OR, XOR, ADD, SUB,				/* logical and arithmetic */
 	SHL, SHR, ASR,					/* shift */
-	BEQ, BNE, BLT, BGE, BRA, JMP,			/* branch */
+	BEQ, BNE, BLT, BGE, BRA, JMP,			/* branch and jump */
 	LDW, STW, LDB, STB,				/* load/store */
 	IN, INB, OUT, OUTB				/* input/output */
 };

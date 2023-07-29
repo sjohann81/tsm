@@ -99,29 +99,29 @@ int execute(struct vm_s *vm, int instr)
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a == b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		a == b ? vm->pc += vm->code[vm->pc] >> 2 : vm->pc++;
 		return 1;
 	case BNE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a != b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		a != b ? vm->pc += vm->code[vm->pc] >> 2 : vm->pc++;
 		return 1;
 	case BLT:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a < b ? vm->pc = vm->code[vm->pc] >> 2 : vm->pc++;
+		a < b ? vm->pc += vm->code[vm->pc] >> 2 : vm->pc++;
 		return 1;
 	case BGE:
 		b = vm->stack[vm->sp++];
 		a = vm->stack[vm->sp++];
 		vm->pc++;
-		a >= b ? vm->pc = vm->code[vm->pc] >> 2: vm->pc++;
+		a >= b ? vm->pc += vm->code[vm->pc] >> 2: vm->pc++;
 		return 1;
 	case BRA:
 		vm->pc++;
-		vm->pc = vm->code[vm->pc] >> 2;
+		vm->pc += vm->code[vm->pc] >> 2;
 		return 1;
 	case JMP:
 		vm->pc = vm->stack[vm->sp++] >> 2;
