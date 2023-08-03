@@ -7,9 +7,9 @@
 #include "symbol.h"
 
 
-int opcode_find(struct inst_s *opcodes, int op_size, char *opcode)
+int opcode_find(const struct inst_s *opcodes, int op_size, char *opcode)
 {
-	struct inst_s *inst;
+	const struct inst_s *inst;
 	
 	for (int i = 0; i < op_size; i++) {
 		inst = &opcodes[i];
@@ -28,7 +28,7 @@ int opcode_find(struct inst_s *opcodes, int op_size, char *opcode)
  * b) tokenize and interpret opcodes, data words and labels
  * c) determine addresses for labels and build the symbol lookup list */
 
-int pass1(char *code, int org, struct inst_s *opcodes, int op_size, struct symbol_s *sym_table)
+int pass1(char *code, int org, const struct inst_s *opcodes, int op_size, struct symbol_s *sym_table)
 {
 	char *line, *line_store, *word, *word_store;
 	int pc = org;
@@ -89,7 +89,7 @@ int pass1(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 		line = strtok_r(0, "\n", &line_store);
 	}
 	
-	return 0;
+	return sym_count(sym_table);
 }
 
 
@@ -100,7 +100,7 @@ int pass1(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
  * c) patch referenced symbols with addresses
  * d) translate assembly program to machine code */
 
-int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbol_s *sym_table)
+int pass2(char *code, int org, const struct inst_s *opcodes, int op_size, struct symbol_s *sym_table)
 {
 	char *line, *line_store, *word, *word_store;
 	int pc = org;
@@ -204,7 +204,7 @@ int pass2(char *code, int org, struct inst_s *opcodes, int op_size, struct symbo
 			fprintf(stderr, "\n");
 	}
 	
-	return 0;
+	return pc;
 }
 
 
@@ -212,7 +212,7 @@ int main(void)
 {
 	char *p1buf, *p2buf;
 	size_t msize = 4096;
-	int val, pass = 1;
+	int val;
 	struct symbol_s sym_table;
 	struct symbol_s *sptr = &sym_table;
 	
@@ -243,12 +243,13 @@ int main(void)
 	strcpy(p2buf, p1buf);
 	
 	val = pass1(p1buf, 0, opcodes, op_size, sptr);
-	if (val) goto fail;
-	fprintf(stderr, "Pass %d ok.\n", pass++);
+	if (val < 0) goto fail;
+	fprintf(stderr, "Pass 1 ok.\n%d symbols defined.\n", val);
 		
 	val = pass2(p2buf, 0, opcodes, op_size, sptr);
-	if (val) goto fail;
-	fprintf(stderr, "Pass %d ok.\n", pass++);
+	if (val < 0) goto fail;
+
+	fprintf(stderr, "Pass 2 ok.\nProgram assembled, %ld words (%d bytes).\n", val / sizeof(int), val);
 	
 	free(p1buf);
 	free(p2buf);
@@ -258,7 +259,7 @@ int main(void)
 		
 	return 0;
 fail:
-	fprintf(stderr, "Failed on pass %d.\n", pass);
+	fprintf(stderr, "Assembly failed.\n");
 	free(p1buf);
 	free(p2buf);
 

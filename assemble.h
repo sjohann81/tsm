@@ -18,7 +18,7 @@ struct inst_s {
 };
 
 /* Instruction opcode table */
-struct inst_s opcodes[] = {
+const struct inst_s opcodes[] = {
 	{"HLT", HLT},
 	{"PSH", PSH}, {"POP", POP},
 	{"DUP", DUP}, {"SWAP", SWAP}, {"OVER", OVER},
