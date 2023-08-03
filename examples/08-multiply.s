@@ -5,6 +5,10 @@ main:
 	PSHFP			; push frame pointer
 	PSHSP			; push stack pointer
 	PSH ret1		; push return address
+	PSHSP
+	PSH 16
+	ADD
+	POPFP			; set frame pointer
 	BRA mult		; call multiply routine
 ret1:
 	POPSP			; pop stack pointer
@@ -30,12 +34,9 @@ ret1:
 ; }
 	
 mult:
-	PSHSP
-	POPFP			; set frame pointer
-loop_mult:
 	PSHFP
-	PSH 20
-	ADD			; &b (FP + 20)
+	PSH 4
+	ADD			; &b (FP + 4)
 	LDW			; load b
 	DUP			; stash a copy of b for later use
 	PSH 0
@@ -46,31 +47,26 @@ loop_mult:
 	PSH 0
 	BEQ skip_accu		; if !(b & 1), skip
 	PSHFP
-	PSH 24
-	ADD			; &answer (FP + 24)
+	PSH 8
+	ADD			; &answer (FP + 8)
 	DUP			; stash a copy of &answer for later use
 	LDW			; load answer
-	PSHFP
-	PSH 16
-	ADD			; &a
+	PSHFP			; &a (FP + 0)
 	LDW			; load a
 	ADD			; answer + a
 	SWAP			; get stashed &answer
 	STW			; answer = answer + a
 	
 skip_accu:
-	PSHFP
-	PSH 16
-	ADD			; &a
+	PSHFP			; &a
 	DUP			; stash a copy of &a for later use
 	LDW			; load a
 	PSH 1
 	SHL
 	SWAP			; get stashed &a
 	STW			; a = a << 1
-	
 	PSHFP
-	PSH 20
+	PSH 4
 	ADD			; &b
 	DUP			; stash a copy of &b for later use
 	LDW			; load b
@@ -79,7 +75,7 @@ skip_accu:
 	SWAP			; get stashed address
 	STW			; b = b >> 1
 	
-	BRA loop_mult
+	BRA mult
 	
 end_mult:
 	POP

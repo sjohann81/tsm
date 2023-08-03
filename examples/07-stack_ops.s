@@ -19,36 +19,37 @@ main:
 	PSHFP			; push frame pointer
 	PSHSP			; push stack pointer
 	PSH ret1		; push return address
+	PSHSP
+	PSH 16
+	ADD
+	POPFP			; set frame pointer
 	BRA func1		; call func1
 ret1:
-	POPSP
-	POPFP
-	POP
-	POP
-	POP
+	POPSP			; restore stack pointer
+	POPFP			; restore frame pointer
+	POP			; pop 1st argument
+	POP			; pop 2nd argument
+	POP			; pop 3rd argument
 	HLT
 
 ; arguments in stack: RA, SP, FP, 777, 888, 999
 func1:
-	PSHSP
-	POPFP			; set frame pointer
-	
 	PSHFP
-	PSH 16
+	PSH 0
 	ADD
-	LDW			; load 1st argument (SP + 16)
+	LDW			; load 1st argument (FP + 0)
 	OUT
 	
 	PSHFP
-	PSH 20
+	PSH 4
 	ADD
-	LDW			; load 2nd argument (SP + 20)
+	LDW			; load 2nd argument (FP + 4)
 	OUT
 
 	PSHFP
-	PSH 24
+	PSH 8
 	ADD
-	LDW			; load 3rd argument (SP + 24)
+	LDW			; load 3rd argument (FP + 8)
 	OUT
 
 	JMP			; return (RA in stack)
