@@ -1,4 +1,4 @@
-#define MEM_SIZE	4096
+#define MEM_SIZE	(1024 * 1024)
 
 /* machine instruction set */
 enum {

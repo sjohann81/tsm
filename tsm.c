@@ -8,8 +8,8 @@
  * 
  * Machine state is kept in a struct vm_s data structure (program counter,
  * stack pointer and pointers to memory. An instruction is decoded and
- * executed. In this implementation, POP and POPB instructions have popped
- * values (int and char) printed in the terminal. */
+ * executed.
+ */
 
 int execute(struct vm_s *vm, int instr)
 {
