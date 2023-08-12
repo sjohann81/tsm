@@ -23,7 +23,7 @@ print_loop:
 	OUTB			; print it
 	
 	PSH 0
-	BEQ ret_print		; if byte is a null, return (patched address)
+	BEQ ret_print		; if byte is a null, return
 	
 	PSH 1
 	ADD			; increment pointer
